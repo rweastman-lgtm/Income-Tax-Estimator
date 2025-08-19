@@ -1,6 +1,38 @@
 # tax_estimator_app.py
 import streamlit as st
 
+def apply_pso_credit(income_dict, is_pso_eligible):
+    """Applies PSO exclusion if eligible. Reduces taxable pension/annuity income by up to $3,000."""
+    if not is_pso_eligible:
+        return income_dict
+
+    reduction = 3000
+    pension = income_dict.get("Pension", 0)
+    annuity = income_dict.get("Annuity", 0)
+
+    if pension >= reduction:
+        income_dict["Pension"] -= reduction
+    elif annuity >= reduction:
+        income_dict["Annuity"] -= reduction
+    else:
+        # Partial exclusion if neither covers full $3,000
+        total_available = pension + annuity
+        income_dict["Pension"] = max(0, pension - reduction)
+        income_dict["Annuity"] = max(0, annuity - (reduction - pension))
+
+    return income_dict
+
+def simulate_roth_conversion(income_dict, age_1=64, age_2=60):
+    """Simulates Roth conversions from $0 to $150k and tracks marginal tax impact."""
+    results = []
+    for conv_amount in range(0, 150001, 5000):
+        temp_income = income_dict.copy()
+        temp_income["Roth Conversions"] = conv_amount
+        adjusted = apply_pso_credit(temp_income, is_pso_eligible)
+        tax_result = estimate_tax(adjusted, age_1, age_2)
+        results.append((conv_amount, tax_result["Total Tax"]))
+    return results
+
 def estimate_tax(income_dict, age_1, age_2):
     base_deduction = 29200
     age_bonus = 1500 * sum([age_1 >= 65, age_2 >= 65])
@@ -85,8 +117,35 @@ income_sources = {
     "Social Security": st.slider("Social Security Benefits", 0, 80000, 40000, step=1000)
 }
 
-results = estimate_tax(income_sources, age_1=64, age_2=60)
+# Eligibility toggles
+is_pso_eligible = st.checkbox("✅ Eligible for PSO Credit (Retired Law Enforcement / Firefighter)")
+is_illinois_resident = st.checkbox("🏠 Illinois Resident (Retirement Income Excluded from State Tax)")
+
+adjusted_income = apply_pso_credit(income_sources.copy(), is_pso_eligible)
+results = estimate_tax(adjusted_income, age_1=64, age_2=60)
 
 st.subheader("📊 Tax Summary")
 for k, v in results.items():
     st.write(f"**{k}:** ${v:,.2f}")
+
+if is_pso_eligible:
+    st.info("✅ PSO Credit Applied: Up to $3,000 excluded from taxable pension/annuity income.")
+
+if is_illinois_resident:
+    st.info("🏠 Illinois Resident: Retirement income (IRA, pension, annuity, Social Security) is excluded from *state* tax. This estimator models **federal** tax only.")
+
+st.subheader("📈 Roth Conversion Tax Impact")
+
+conversion_data = simulate_roth_conversion(income_sources.copy(), age_1=64, age_2=60)
+conv_amounts, total_taxes = zip(*conversion_data)
+
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax.plot(conv_amounts, total_taxes, marker='o', color='purple')
+ax.set_title("Marginal Tax Impact of Roth Conversions")
+ax.set_xlabel("Roth Conversion Amount ($)")
+ax.set_ylabel("Total Federal Tax ($)")
+ax.grid(True)
+
+st.pyplot(fig)
