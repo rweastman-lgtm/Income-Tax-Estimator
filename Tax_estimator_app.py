@@ -32,6 +32,20 @@ def simulate_roth_conversion(income_dict, age_1=64, age_2=60):
         tax_result = estimate_tax(adjusted, age_1, age_2)
         results.append((conv_amount, tax_result["Total Tax"]))
     return results
+def apply_capital_loss_offset(income_dict, capital_loss_carryover):
+    """Applies up to $3,000 of capital loss carryover against ordinary income."""
+    offset_limit = min(capital_loss_carryover, 3000)
+
+    # Prioritize offsetting taxable interest, then pension, then annuity
+    for key in ["Taxable Interest", "Pension", "Annuity"]:
+        if key in income_dict and income_dict[key] > 0:
+            reduction = min(offset_limit, income_dict[key])
+            income_dict[key] -= reduction
+            offset_limit -= reduction
+            if offset_limit <= 0:
+                break
+
+    return income_dict
 
 def estimate_tax(income_dict, age_1, age_2):
     base_deduction = 29200
@@ -117,6 +131,10 @@ income_sources = {
     "Social Security": st.slider("Social Security Benefits", 0, 80000, 40000, step=1000)
 }
 
+capital_loss_carryover = st.number_input(
+    "💸 Capital Loss Carryover ($)", min_value=0, max_value=100000, value=0, step=500
+)
+
 # Eligibility toggles
 is_pso_eligible = st.checkbox("✅ Eligible for PSO Credit (Retired Law Enforcement / Firefighter)")
 is_illinois_resident = st.checkbox("🏠 Illinois Resident (Retirement Income Excluded from State Tax)")
@@ -147,5 +165,8 @@ ax.set_title("Marginal Tax Impact of Roth Conversions")
 ax.set_xlabel("Roth Conversion Amount ($)")
 ax.set_ylabel("Total Federal Tax ($)")
 ax.grid(True)
+
+if capital_loss_carryover > 0:
+    st.info(f"💸 Capital Loss Carryover Applied: ${min(capital_loss_carryover, 3000):,.0f} offset against ordinary income.")
 
 st.pyplot(fig)
