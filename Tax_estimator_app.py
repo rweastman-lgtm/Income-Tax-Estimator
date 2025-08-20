@@ -47,10 +47,20 @@ def apply_capital_loss_offset(income_dict, capital_loss_carryover):
 
     return income_dict
 
+def get_bonus_deduction(magi):
+    if magi <= 150000:
+        return 12000
+    elif magi <= 250000:
+        return max(0, 12000 - 0.06 * (magi - 150000))
+    else:
+        return 0
+
 def estimate_tax(income_dict, age_1, age_2):
-    base_deduction = 29200
-    age_bonus = 1500 * sum([age_1 >= 65, age_2 >= 65])
-    deduction = base_deduction + age_bonus
+    base_deduction = 31500
+    bonus_deduction = get_bonus_deduction(
+        sum(income_dict.values())  # MAGI approximation
+    ) if age_1 >= 65 and age_2 >= 65 else 0
+    deduction = base_deduction + bonus_deduction
 
     ss = income_dict.get("Social Security", 0)
     qualified_div = income_dict.get("Qualified Dividends", 0)
@@ -78,20 +88,23 @@ def estimate_tax(income_dict, age_1, age_2):
     taxable_income = max(0, ordinary_income + ss_taxable - deduction)
 
     brackets = [
-        (0, 23200, 0.10),
-        (23200, 94300, 0.12),
-        (94300, 201050, 0.22),
-        (201050, 383900, 0.24),
-        (383900, 487450, 0.32),
-        (487450, 731200, 0.35),
-        (731200, float('inf'), 0.37)
+        (0, 23850, 0.10),
+        (23850, 96950, 0.12),
+        (96950, 206700, 0.22),
+        (206700, 394600, 0.24),
+        (394600, 501050, 0.32),
+        (501050, 751600, 0.35),
+        (751600, float('inf'), 0.37)
     ]
 
     tax = 0
+    breakdown = []
     for lower, upper, rate in brackets:
         if taxable_income > lower:
             taxed_amount = min(taxable_income, upper) - lower
-            tax += taxed_amount * rate
+            bracket_tax = taxed_amount * rate
+            tax += bracket_tax
+            breakdown.append((f"${lower:,}–${upper:,} @ {int(rate*100)}%", round(bracket_tax, 2)))
         else:
             break
 
@@ -111,40 +124,51 @@ def estimate_tax(income_dict, age_1, age_2):
         "Taxable Income": taxable_income,
         "Ordinary Tax": round(tax, 2),
         "Capital Gains Tax": round(cg_tax, 2),
-        "Total Tax": round(tax + cg_tax, 2)
+        "Total Tax": round(tax + cg_tax, 2),
+        "Bracket Breakdown": breakdown
     }
 
 # Streamlit UI
 st.title("💸 IRA Conversion & Tax Estimator")
 st.caption("For Married Filing Jointly | Ages 64 & 60")
 
+st.title("💸 IRA Conversion & Tax Estimator")
+st.caption("For Married Filing Jointly | Ages 64 & 60")
+
+age_1 = st.number_input("Age of Taxpayer 1", min_value=0, max_value=120, value=64, step=1)
+age_2 = st.number_input("Age of Taxpayer 2", min_value=0, max_value=120, value=60, step=1)
+
 income_sources = {
-    "IRA Withdrawals": st.slider("IRA Withdrawals", 0, 150000, 30000, step=1000),
-    "Roth Conversions": st.slider("Roth Conversions", 0, 150000, 20000, step=1000),
-    "Pension": st.slider("Pension Income", 0, 100000, 25000, step=1000),
-    "TSP": st.slider("TSP Withdrawals", 0, 100000, 15000, step=1000),
-    "Annuity": st.slider("Annuity Payments", 0, 100000, 10000, step=1000),
-    "Interest": st.slider("Interest Income", 0, 50000, 3000, step=500),
-    "Ordinary Dividends": st.slider("Ordinary Dividends", 0, 50000, 0, step=500),
-    "Qualified Dividends": st.slider("Qualified Dividends", 0, 50000, 5000, step=500),
-    "Capital Gains": st.slider("Capital Gains", 0, 100000, 10000, step=1000),
-    "Social Security": st.slider("Social Security Benefits", 0, 80000, 40000, step=1000)
+    "IRA Withdrawals": st.number_input("IRA Withdrawals ($)", min_value=0, value=30000, step=1000),
+    "Roth Conversions": st.number_input("Roth Conversions ($)", min_value=0, value=20000, step=1000),
+    "Pension": st.number_input("Pension Income ($)", min_value=0, value=25000, step=1000),
+    "TSP": st.number_input("TSP Withdrawals ($)", min_value=0, value=15000, step=1000),
+    "Annuity": st.number_input("Annuity Payments ($)", min_value=0, value=10000, step=1000),
+    "Interest": st.number_input("Interest Income ($)", min_value=0, value=3000, step=500),
+    "Ordinary Dividends": st.number_input("Ordinary Dividends ($)", min_value=0, value=0, step=500),
+    "Qualified Dividends": st.number_input("Qualified Dividends ($)", min_value=0, value=5000, step=500),
+    "Capital Gains": st.number_input("Capital Gains ($)", min_value=0, value=10000, step=1000),
+    "Social Security": st.number_input("Social Security Benefits ($)", min_value=0, value=40000, step=1000)
 }
 
-capital_loss_carryover = st.number_input(
-    "💸 Capital Loss Carryover ($)", min_value=0, max_value=100000, value=0, step=500
-)
+capital_loss_carryover = st.number_input("💸 Capital Loss Carryover ($)", min_value=0, max_value=100000, value=0, step=500)
 
 # Eligibility toggles
 is_pso_eligible = st.checkbox("✅ Eligible for PSO Credit (Retired Law Enforcement / Firefighter)")
 is_illinois_resident = st.checkbox("🏠 Illinois Resident (Retirement Income Excluded from State Tax)")
 
 adjusted_income = apply_pso_credit(income_sources.copy(), is_pso_eligible)
-results = estimate_tax(adjusted_income, age_1=64, age_2=60)
+results = estimate_tax(adjusted_income, age_1=age_1, age_2=age_2)
+
 
 st.subheader("📊 Tax Summary")
 for k, v in results.items():
-    st.write(f"**{k}:** ${v:,.2f}")
+    if k != "Bracket Breakdown":
+        st.write(f"**{k}:** ${v:,.2f}")
+
+st.subheader("🧮 Bracket Breakdown")
+for label, amount in results["Bracket Breakdown"]:
+    st.write(f"{label}: ${amount:,.2f}")
 
 if is_pso_eligible:
     st.info("✅ PSO Credit Applied: Up to $3,000 excluded from taxable pension/annuity income.")
