@@ -180,16 +180,17 @@ def estimate_tax(income_dict, age_1, age_2):
         taxable_income=taxable_income
 )
 
-  return {
-    "Total Income": ordinary_income + ss + qualified_div + cap_gains,
-    "Deduction": deduction,
-    "Taxable Income": taxable_income,
-    "Ordinary Tax": round(tax, 2),
-    "Capital Gains Tax": round(cg_tax, 2),
-    "Total Tax": round(tax + cg_tax, 2),
-    "Bracket Breakdown": breakdown,
-    "CG Breakdown": cg_verbose
-}
+      return {
+        "Total Income": ordinary_income + ss + qualified_div + cap_gains,
+        "Deduction": deduction,
+        "Taxable Income": taxable_income,
+        "Ordinary Tax": round(tax, 2),
+        "Capital Gains Tax": round(cg_tax, 2),
+        "Total Tax": round(tax + cg_tax, 2),
+        "Bracket Breakdown": breakdown,
+        "CG Breakdown": cg_verbose
+    }
+
 
 # Streamlit UI
 st.title("💸 IRA Conversion & Tax Estimator")
