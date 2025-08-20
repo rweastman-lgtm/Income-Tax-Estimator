@@ -55,6 +55,39 @@ def get_bonus_deduction(magi):
     else:
         return 0
 
+def calculate_cg_tax(qualified_dividends, capital_gains, capital_loss_carryover, taxable_income):
+    # 2025 MFJ capital gains brackets
+    brackets = [
+        (0, 89450, 0.00),
+        (89450, 553850, 0.15),
+        (553850, float('inf'), 0.20)
+    ]
+
+    # Step 1: Apply capital loss carryover to capital gains
+    offset = min(capital_gains, capital_loss_carryover)
+    adjusted_gains = capital_gains - offset
+    remaining_loss = capital_loss_carryover - offset
+
+    # Step 2: Total CG + QD to be taxed
+    cg_plus_qd = adjusted_gains + qualified_dividends
+    cg_tax = 0
+    remaining = cg_plus_qd
+    verbose = []
+
+    # Step 3: Segment into brackets
+    for lower, upper, rate in brackets:
+        bracket_start = max(lower, taxable_income)
+        if bracket_start >= upper or remaining <= 0:
+            continue
+        bracket_range = upper - bracket_start
+        taxed_amount = min(remaining, bracket_range)
+        tax = taxed_amount * rate
+        cg_tax += tax
+        verbose.append((f"${bracket_start:,.0f}–${upper:,.0f} @ {int(rate*100)}%", round(tax, 2)))
+        remaining -= taxed_amount
+
+    return round(cg_tax, 2), verbose, remaining_loss
+
 def estimate_tax(income_dict, age_1, age_2):
     base_deduction = 31500
     bonus_deduction = get_bonus_deduction(
