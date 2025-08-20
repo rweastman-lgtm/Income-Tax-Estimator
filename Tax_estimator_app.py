@@ -192,8 +192,6 @@ def estimate_tax(income_dict, age_1, age_2):
     }
 
 # Streamlit UI
-st.title("💸 IRA Conversion & Tax Estimator")
-st.caption("For Married Filing Jointly | Ages 64 & 60")
 
 st.title("💸 IRA Conversion & Tax Estimator")
 st.caption("For Married Filing Jointly | Ages 64 & 60")
