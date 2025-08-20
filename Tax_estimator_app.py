@@ -88,6 +88,37 @@ def calculate_cg_tax(qualified_dividends, capital_gains, capital_loss_carryover,
 
     return round(cg_tax, 2), verbose, remaining_loss
 
+def calculate_cg_tax(qualified_dividends, capital_gains, capital_loss_carryover, taxable_income):
+    brackets = [
+        (0, 89450, 0.00),
+        (89450, 553850, 0.15),
+        (553850, float('inf'), 0.20)
+    ]
+
+    # Apply capital loss carryover to capital gains
+    offset = min(capital_gains, capital_loss_carryover)
+    adjusted_gains = max(0, capital_gains - offset)
+    remaining_loss = capital_loss_carryover - offset
+
+    # Total CG + QD to be taxed
+    cg_plus_qd = adjusted_gains + qualified_dividends
+    cg_tax = 0
+    remaining = cg_plus_qd
+    verbose = []
+
+    for lower, upper, rate in brackets:
+        bracket_start = max(lower, taxable_income)
+        if bracket_start >= upper or remaining <= 0:
+            continue
+        bracket_range = upper - bracket_start
+        taxed_amount = min(remaining, bracket_range)
+        tax = taxed_amount * rate
+        cg_tax += tax
+        verbose.append((f"${bracket_start:,.0f}–${upper:,.0f} @ {int(rate*100)}%", round(tax, 2)))
+        remaining -= taxed_amount
+
+    return round(cg_tax, 2), verbose, remaining_loss
+
 def estimate_tax(income_dict, age_1, age_2):
     base_deduction = 31500
     bonus_deduction = get_bonus_deduction(
@@ -141,25 +172,24 @@ def estimate_tax(income_dict, age_1, age_2):
         else:
             break
 
-    cg_thresholds = [(0, 89450, 0.00), (89450, 553850, 0.15), (553850, float('inf'), 0.20)]
-    cg_taxable = qualified_div + cap_gains
-    cg_tax = 0
-    for lower, upper, rate in cg_thresholds:
-        if taxable_income + cg_taxable > lower:
-            taxed_amount = min(taxable_income + cg_taxable, upper) - lower
-            cg_tax += taxed_amount * rate
-        else:
-            break
+   adjusted_gains = max(0, cap_gains - capital_loss_carryover)
+cg_tax, cg_verbose, carryover_remaining = calculate_cg_tax(
+    qualified_dividends=qualified_div,
+    capital_gains=adjusted_gains,
+    capital_loss_carryover=capital_loss_carryover,
+    taxable_income=taxable_income
+)
 
-    return {
-        "Total Income": ordinary_income + ss + qualified_div + cap_gains,
-        "Deduction": deduction,
-        "Taxable Income": taxable_income,
-        "Ordinary Tax": round(tax, 2),
-        "Capital Gains Tax": round(cg_tax, 2),
-        "Total Tax": round(tax + cg_tax, 2),
-        "Bracket Breakdown": breakdown
-    }
+  return {
+    "Total Income": ordinary_income + ss + qualified_div + cap_gains,
+    "Deduction": deduction,
+    "Taxable Income": taxable_income,
+    "Ordinary Tax": round(tax, 2),
+    "Capital Gains Tax": round(cg_tax, 2),
+    "Total Tax": round(tax + cg_tax, 2),
+    "Bracket Breakdown": breakdown,
+    "CG Breakdown": cg_verbose
+}
 
 # Streamlit UI
 st.title("💸 IRA Conversion & Tax Estimator")
@@ -201,6 +231,10 @@ for k, v in results.items():
 
 st.subheader("🧮 Bracket Breakdown")
 for label, amount in results["Bracket Breakdown"]:
+    st.write(f"{label}: ${amount:,.2f}")
+
+st.subheader("📊 Capital Gains Tax Breakdown")
+for label, amount in results.get("CG Breakdown", []):
     st.write(f"{label}: ${amount:,.2f}")
 
 if is_pso_eligible:
