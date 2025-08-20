@@ -121,9 +121,11 @@ def calculate_cg_tax(qualified_dividends, capital_gains, capital_loss_carryover,
 
 def estimate_tax(income_dict, age_1, age_2):
     base_deduction = 31500
-    bonus_deduction = get_bonus_deduction(
-        sum(income_dict.values())  # MAGI approximation
-    ) if age_1 >= 65 and age_2 >= 65 else 0
+    bonus_deduction = sum(
+    get_bonus_deduction(sum(income_dict.values()))
+    for age in [age_1, age_2] if age >= 65
+)
+
     deduction = base_deduction + bonus_deduction
 
     ss = income_dict.get("Social Security", 0)
