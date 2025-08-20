@@ -173,7 +173,7 @@ def estimate_tax(income_dict, age_1, age_2):
             break
 
         adjusted_gains = max(0, cap_gains - capital_loss_carryover)
-    cg_tax, cg_verbose, carryover_remaining = calculate_cg_tax(
+        cg_tax, cg_verbose, carryover_remaining = calculate_cg_tax(
         qualified_dividends=qualified_div,
         capital_gains=adjusted_gains,
         capital_loss_carryover=capital_loss_carryover,
