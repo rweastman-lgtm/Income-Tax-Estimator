@@ -189,7 +189,7 @@ def estimate_tax(income_dict, age_1, age_2):
         "Total Tax": round(tax + cg_tax, 2),
         "Bracket Breakdown": breakdown,
         "CG Breakdown": cg_verbose
-    }
+      }
 
 
 # Streamlit UI
