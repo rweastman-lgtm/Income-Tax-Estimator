@@ -172,15 +172,15 @@ def estimate_tax(income_dict, age_1, age_2):
         else:
             break
 
-        adjusted_gains = max(0, cap_gains - capital_loss_carryover)
-        cg_tax, cg_verbose, carryover_remaining = calculate_cg_tax(
+    adjusted_gains = max(0, cap_gains - capital_loss_carryover)
+    cg_tax, cg_verbose, carryover_remaining = calculate_cg_tax(
         qualified_dividends=qualified_div,
         capital_gains=adjusted_gains,
         capital_loss_carryover=capital_loss_carryover,
         taxable_income=taxable_income
     )
 
-      return {
+    return {
         "Total Income": ordinary_income + ss + qualified_div + cap_gains,
         "Deduction": deduction,
         "Taxable Income": taxable_income,
@@ -189,8 +189,7 @@ def estimate_tax(income_dict, age_1, age_2):
         "Total Tax": round(tax + cg_tax, 2),
         "Bracket Breakdown": breakdown,
         "CG Breakdown": cg_verbose
-      }
-
+    }
 
 # Streamlit UI
 st.title("💸 IRA Conversion & Tax Estimator")
