@@ -227,7 +227,10 @@ results = estimate_tax(adjusted_income, age_1=age_1, age_2=age_2)
 st.subheader("📊 Tax Summary")
 for k, v in results.items():
     if k != "Bracket Breakdown":
-        st.write(f"**{k}:** ${v:,.2f}")
+        if isinstance(v, (int, float)):
+            st.write(f"**{k}:** ${v:,.2f}")
+        else:
+            st.write(f"**{k}:** {v}")
 
 st.subheader("🧮 Bracket Breakdown")
 for label, amount in results["Bracket Breakdown"]:
