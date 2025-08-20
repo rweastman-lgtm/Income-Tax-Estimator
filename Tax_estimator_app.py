@@ -178,7 +178,7 @@ def estimate_tax(income_dict, age_1, age_2):
         capital_gains=adjusted_gains,
         capital_loss_carryover=capital_loss_carryover,
         taxable_income=taxable_income
-)
+    )
 
       return {
         "Total Income": ordinary_income + ss + qualified_div + cap_gains,
