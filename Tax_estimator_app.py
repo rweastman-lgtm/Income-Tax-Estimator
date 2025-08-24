@@ -181,4 +181,9 @@ results = estimate_tax(adjusted_income, age_1=age_1, age_2=age_2, capital_loss_c
 
 st.subheader("📊 Tax Summary")
 for k, v in results.items():
-    if k != "
+    if k not in ["Bracket Breakdown", "CG Breakdown"]:
+        if isinstance(v, (int, float)):
+            st.write(f"**{k}:** ${v:,.2f}")
+        else:
+            st.write(f"**{k}:** {v}")
+
