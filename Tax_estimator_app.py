@@ -180,8 +180,29 @@ is_illinois_resident = st.checkbox("🏠 Illinois Resident (Retirement Income Ex
 fed_capital_loss = min(capital_loss_carryover, 3000)
 il_capital_loss = min(capital_loss_carryover, 3000)  # used only in IL-taxable context
 
-adjusted_income = apply_pso_credit(income_sources.copy(), is_pso_eligible)
-results = estimate_tax(adjusted_income, age_1=age_1, age_2=age_2, capital_loss_carryover=fed_capital_loss)
+# Create scoped copies for federal and Illinois
+adjusted_income_fed = income_sources.copy()
+adjusted_income_il = apply_pso_credit(income_sources.copy(), is_pso_eligible)
+
+# Decouple capital loss logic
+fed_capital_loss = min(capital_loss_carryover, 3000)
+il_capital_loss = min(capital_loss_carryover, 3000)
+
+# Compute federal taxes
+results = estimate_tax(
+    adjusted_income_fed,
+    age_1=age_1,
+    age_2=age_2,
+    capital_loss_carryover=fed_capital_loss
+)
+
+# Compute Illinois taxes
+il_results = compute_illinois_tax(
+    adjusted_income_il,
+    fed_taxable_income=results["taxable_income"],
+    fed_taxed_retirement=results["taxed_retirement"],
+    capital_loss_carryover=il_capital_loss
+)
 
 fed_taxable_income = results.get("Taxable Income", 0)
 
