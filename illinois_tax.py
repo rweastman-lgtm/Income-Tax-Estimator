@@ -6,11 +6,17 @@ def apply_pso_credit(income_sources, is_pso_eligible):
     return income_sources
 
 def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retirement, capital_loss_carryover, resident_tax_credit):
-    il_taxable_income = fed_taxable_income - fed_taxed_retirement
-    il_taxable_income = max(il_taxable_income, 0)
-    il_tax_due = il_taxable_income * 0.0495  # Illinois flat rate
-    il_tax_due -= resident_tax_credit
-    return {
-        "IL Taxable Income": il_taxable_income,
-        "Illinois Tax": max(il_tax_due, 0)
+il_taxable_income = federal_taxable_income
+
+# Add back federally taxed retirement income that Illinois excludes
+il_taxable_income += (
+    income_sources.get("IRA Withdrawals", 0) +
+    income_sources.get("Roth Conversions", 0) +
+    income_sources.get("Pension", 0) +
+    income_sources.get("TSP", 0) +
+    income_sources.get("Annuity", 0) +
+    taxable_social_security  # Only the federally taxed portion
+)
+
+       il_tax_due = max(il_taxable_income * 0.0495, 0)
     }
