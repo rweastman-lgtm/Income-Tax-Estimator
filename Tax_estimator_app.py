@@ -45,11 +45,11 @@ fed_taxed_retirement = (
 
 il_results = compute_illinois_tax(
     income_sources,
-    fed_taxable_income,
-    fed_taxed_retirement,
-    taxable_social_security,
-    capital_loss_carryover,
-    resident_tax_credit
+    fed_taxable_income=fed_results["Taxable Income"],
+    fed_taxed_retirement=fed_taxed_retirement,
+    taxable_social_security=fed_results["Taxed Social Security"],
+    capital_loss_carryover=capital_loss_carryover,
+    resident_tax_credit=resident_tax_credit
 )
 
 # Display
