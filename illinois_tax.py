@@ -1,10 +1,20 @@
 def compute_illinois_tax(
-    adjusted_income,
+    adjusted_income_il,
     fed_taxable_income,
     fed_taxed_retirement,
     capital_loss_carryover=0.0,
     resident_tax_credit=0.0
 ):
+    # Your logic here
+    il_taxable_income = max(0, fed_taxable_income - fed_taxed_retirement)
+    il_tax = round(il_taxable_income * 0.0495 - resident_tax_credit, 2)
+    effective_rate = il_tax / fed_taxable_income if fed_taxable_income else 0
+
+    return {
+        "il_taxable_income": il_taxable_income,
+        "il_tax": il_tax,
+        "effective_rate": effective_rate
+    }
 
     """
     Calculates Illinois income tax based on IL-taxable sources only.
