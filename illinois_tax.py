@@ -24,3 +24,6 @@ def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retiremen
         "IL Taxable Income": il_taxable_income,
         "Illinois Tax": il_tax_due
     }
+
+st.write("🔍 IL Taxable Income:", il_results["IL Taxable Income"])
+st.write("💰 IL Tax Due:", il_results["Illinois Tax"])
