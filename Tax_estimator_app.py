@@ -179,6 +179,16 @@ is_illinois_resident = st.checkbox("🏠 Illinois Resident (Retirement Income Ex
 adjusted_income = apply_pso_credit(income_sources.copy(), is_pso_eligible)
 results = estimate_tax(adjusted_income, age_1=age_1, age_2=age_2, capital_loss_carryover=capital_loss_carryover)
 
+from illinois_tax import compute_illinois_tax
+
+# Assume fed_taxable_income and fed_taxed_retirement are already computed
+il_result = compute_illinois_tax(fed_taxable_income, fed_taxed_retirement)
+
+st.subheader("Illinois Income Tax")
+st.write(f"Adjusted IL Income: ${il_result['adjusted_income']:,.2f}")
+st.write(f"IL Tax Due: ${il_result['il_tax']:,.2f}")
+st.write(f"Effective IL Tax Rate: {il_result['effective_rate']*100:.2f}%")
+
 st.subheader("📊 Tax Summary")
 for k, v in results.items():
     if k not in ["Bracket Breakdown", "CG Breakdown"]:
