@@ -1,24 +1,42 @@
-def compute_illinois_tax(federal_taxable_income, federally_taxed_retirement=0):
+def compute_illinois_tax(
+    dividends=0.0,
+    interest=0.0,
+    capital_gains=0.0,
+    capital_losses=0.0,
+    annuities=0.0,
+    resident_tax_credit=0.0
+):
     """
-    Calculates Illinois income tax based on federal taxable income.
-    
+    Calculates Illinois income tax based on IL-taxable sources only.
+
     Args:
-        federal_taxable_income (float): Total taxable income from federal estimator.
-        federally_taxed_retirement (float): Portion of retirement income taxed federally but exempt in IL.
+        dividends (float): Taxable dividends.
+        interest (float): Taxable interest.
+        capital_gains (float): Realized capital gains.
+        capital_losses (float): Realized capital losses (max $3,000 deduction).
+        annuities (float): Non-retirement annuity income.
+        resident_tax_credit (float): Credit for taxes paid to other states.
 
     Returns:
         dict: {
-            'adjusted_income': float,
+            'il_taxable_income': float,
             'il_tax': float,
+            'resident_credit': float,
+            'tax_due': float,
             'effective_rate': float
         }
     """
-    adjusted_income = max(0, federal_taxable_income - federally_taxed_retirement)
-    il_tax = round(adjusted_income * 0.0495, 2)
-    effective_rate = round(il_tax / federal_taxable_income, 4) if federal_taxable_income else 0.0
+    net_capital = max(-3000.0, capital_gains + capital_losses)
+    il_taxable_income = max(0.0, dividends + interest + annuities + net_capital)
+    il_tax = round(il_taxable_income * 0.0495, 2)
+    tax_due = max(0.0, il_tax - resident_tax_credit)
+    effective_rate = round(tax_due / il_taxable_income, 4) if il_taxable_income else 0.0
 
     return {
-        "adjusted_income": adjusted_income,
+        "il_taxable_income": il_taxable_income,
         "il_tax": il_tax,
+        "resident_credit": resident_tax_credit,
+        "tax_due": tax_due,
         "effective_rate": effective_rate
     }
+
