@@ -26,7 +26,7 @@ def compute_illinois_tax(
             'effective_rate': float
         }
     """
-    net_capital = max(-3000.0, capital_gains + capital_losses)
+    net_capital = min(0.0, capital_gains + max(capital_losses, -3000.0))
     il_taxable_income = max(0.0, dividends + interest + annuities + net_capital)
     il_tax = round(il_taxable_income * 0.0495, 2)
     tax_due = max(0.0, il_tax - resident_tax_credit)
