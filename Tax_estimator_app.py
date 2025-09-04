@@ -46,7 +46,7 @@ fed_taxed_retirement = (
 il_results = compute_illinois_tax(
     adjusted_income_il,
     fed_taxable_income=fed_results["Taxable Income"],
-    fed_taxed_retirement=fed_results["Taxed Retirement"],
+    fed_taxed_retirement=fed_taxed_retirement,  # <-- use your manually computed value
     capital_loss_carryover=min(capital_loss_carryover, 3000),
     resident_tax_credit=resident_tax_credit
 )
@@ -57,6 +57,7 @@ for k, v in fed_results.items():
     if k not in ["Bracket Breakdown", "CG Breakdown"]:
         st.write(f"**{k}:** ${v:,.2f}" if isinstance(v, (int, float)) else f"**{k}:** {v}")
 
+st.write(f"Federally Taxed Retirement (excluded by IL): ${fed_taxed_retirement:,.2f}")
 st.subheader("Illinois Income Tax")
 st.write(f"IL Taxable Income: ${il_results['IL Taxable Income']:,.2f}")
 st.write(f"IL Tax Due: ${il_results['IL Tax']:,.2f}")
