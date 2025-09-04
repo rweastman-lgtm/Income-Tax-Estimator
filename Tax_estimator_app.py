@@ -218,7 +218,10 @@ fed_taxed_retirement = (
 from illinois_tax import compute_illinois_tax
 
 # Assume fed_taxable_income and fed_taxed_retirement are already computed
-il_result = compute_illinois_tax(fed_taxable_income, fed_taxed_retirement)
+il_results = compute_illinois_tax(
+    fed_taxable_income=results["Taxable Income"],
+    fed_taxed_retirement=results["Taxed Retirement"]
+)
 
 st.subheader("Illinois Income Tax")
 st.write(f"IL Taxable Income: ${il_result['il_taxable_income']:,.2f}")
