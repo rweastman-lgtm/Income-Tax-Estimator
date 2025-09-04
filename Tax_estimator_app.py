@@ -43,14 +43,6 @@ fed_taxed_retirement = (
     income_sources.get("TSP", 0)
 )
 
-il_tax_results = compute_illinois_tax(
-    income_sources,
-    fed_taxable_income,
-    fed_taxed_retirement,
-    capital_loss_carryover,
-    resident_tax_credit
-)
-
 il_results = compute_illinois_tax(
     adjusted_income_il,
     fed_taxable_income=fed_results["Taxable Income"],
