@@ -111,5 +111,6 @@ def estimate_tax(income_dict, age_1, age_2, capital_loss_carryover):
             income_dict.get("IRA Withdrawals", 0),
             income_dict.get("Annuity", 0)
         ])
+        "Taxed Social Security": round(ss_taxable, 2),
     }
 
