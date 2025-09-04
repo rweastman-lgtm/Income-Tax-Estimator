@@ -50,4 +50,5 @@ for k, v in fed_results.items():
 
 st.subheader("Illinois Income Tax")
 st.write(f"IL Taxable Income: ${il_results['IL Taxable Income']:,.2f}")
-st.write(f"IL Tax Due: ${il_results['IL
+st.write(f"IL Tax Due: ${il_results['IL Tax']:,.2f}")
+
