@@ -5,6 +5,7 @@ def compute_illinois_tax(
     capital_loss_carryover=0.0,
     resident_tax_credit=0.0
 ):
+
     """
     Calculates Illinois income tax based on IL-taxable sources only.
 
