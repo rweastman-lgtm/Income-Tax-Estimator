@@ -1,34 +1,16 @@
-def compute_illinois_tax(
-    adjusted_income_il,
-    fed_taxable_income,
-    fed_taxed_retirement,
-    capital_loss_carryover=0.0,
-    resident_tax_credit=0.0
-):
-    # Extract IL-taxable sources
-    dividends = adjusted_income_il.get("Dividends", 0.0)
-    interest = adjusted_income_il.get("Interest", 0.0)
-    annuities = adjusted_income_il.get("Annuity", 0.0)
-    net_capital = min(0.0, adjusted_income_il.get("Capital Gains", 0.0) + max(capital_loss_carryover, -3000.0))
+# illinois_tax.py
 
-    if not isinstance(adjusted_income_il, dict):
-        raise TypeError("adjusted_income_il must be a dictionary")
+def apply_pso_credit(income_sources, is_pso_eligible):
+    if is_pso_eligible:
+        income_sources["Pension"] = max(income_sources.get("Pension", 0) - 6000, 0)
+    return income_sources
 
-    # Apply IL capital loss cap
-    net_capital = min(0.0, adjusted_income_il.get("Capital Gains", 0.0) + max(capital_loss_carryover, -3000.0))
-
-    # IL-taxable income calculation
-    il_taxable_income = max(0.0, dividends + interest + annuities + net_capital)
-
-    # IL tax calculation
-    il_tax = round(il_taxable_income * 0.0495, 2)
-    tax_due = max(0.0, il_tax - resident_tax_credit)
-    effective_rate = round(tax_due / fed_taxable_income, 4) if fed_taxable_income else 0.0
-
+def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retirement, capital_loss_carryover, resident_tax_credit):
+    il_taxable_income = fed_taxable_income - fed_taxed_retirement
+    il_taxable_income = max(il_taxable_income, 0)
+    il_tax_due = il_taxable_income * 0.0495  # Illinois flat rate
+    il_tax_due -= resident_tax_credit
     return {
-        "il_taxable_income": il_taxable_income,
-        "il_tax": il_tax,
-        "resident_credit": resident_tax_credit,
-        "tax_due": tax_due,
-        "effective_rate": effective_rate
+        "IL Taxable Income": il_taxable_income,
+        "Illinois Tax": max(il_tax_due, 0)
     }
