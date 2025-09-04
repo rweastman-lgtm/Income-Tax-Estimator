@@ -176,8 +176,12 @@ capital_loss_carryover = st.number_input("💸 Capital Loss Carryover ($)", min_
 is_pso_eligible = st.checkbox("✅ Eligible for PSO Credit (Retired Law Enforcement / Firefighter)")
 is_illinois_resident = st.checkbox("🏠 Illinois Resident (Retirement Income Excluded from State Tax)")
 
+# Decouple capital loss logic for federal vs. Illinois
+fed_capital_loss = min(capital_loss_carryover, 3000)
+il_capital_loss = min(capital_loss_carryover, 3000)  # used only in IL-taxable context
+
 adjusted_income = apply_pso_credit(income_sources.copy(), is_pso_eligible)
-results = estimate_tax(adjusted_income, age_1=age_1, age_2=age_2, capital_loss_carryover=capital_loss_carryover)
+results = estimate_tax(adjusted_income, age_1=age_1, age_2=age_2, capital_loss_carryover=fed_capital_loss)
 
 fed_taxable_income = results.get("Taxable Income", 0)
 
