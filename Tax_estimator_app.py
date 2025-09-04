@@ -195,7 +195,7 @@ from illinois_tax import compute_illinois_tax
 il_result = compute_illinois_tax(fed_taxable_income, fed_taxed_retirement)
 
 st.subheader("Illinois Income Tax")
-st.write(f"Adjusted IL Income: ${il_result['adjusted_income']:,.2f}")
+st.write(f"IL Taxable Income: ${il_result['il_taxable_income']:,.2f}")
 st.write(f"IL Tax Due: ${il_result['il_tax']:,.2f}")
 st.write(f"Effective IL Tax Rate: {il_result['effective_rate']*100:.2f}%")
 
