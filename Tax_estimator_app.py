@@ -34,6 +34,23 @@ adjusted_income_il = apply_pso_credit(income_sources.copy(), is_pso_eligible)
 
 # Compute taxes
 fed_results = estimate_tax(adjusted_income_fed, age_1, age_2, min(capital_loss_carryover, 3000))
+fed_taxed_retirement = (
+    income_sources.get("Social Security", 0) +
+    income_sources.get("Pension", 0) +
+    income_sources.get("IRA Withdrawals", 0) +
+    income_sources.get("Annuity", 0) +
+    income_sources.get("Roth Conversions", 0) +
+    income_sources.get("TSP", 0)
+)
+
+il_tax_results = compute_illinois_tax(
+    income_sources,
+    fed_taxable_income,
+    fed_taxed_retirement,
+    capital_loss_carryover,
+    resident_tax_credit
+)
+
 il_results = compute_illinois_tax(
     adjusted_income_il,
     fed_taxable_income=fed_results["Taxable Income"],
