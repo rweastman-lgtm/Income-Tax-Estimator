@@ -60,5 +60,5 @@ for k, v in fed_results.items():
 st.write(f"Federally Taxed Retirement (excluded by IL): ${fed_taxed_retirement:,.2f}")
 st.subheader("Illinois Income Tax")
 st.write(f"IL Taxable Income: ${il_results['IL Taxable Income']:,.2f}")
-st.write(f"IL Tax Due: ${il_results['IL Tax']:,.2f}")
+st.write(f"IL Tax Due: ${il_results['Illinois Tax']:,.2f}")
 
