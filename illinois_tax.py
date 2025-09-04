@@ -6,7 +6,6 @@ def apply_pso_credit(income_sources, is_pso_eligible):
     return income_sources
 
 def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retirement, taxable_social_security, capital_loss_carryover, resident_tax_credit):
-    il_taxable_income = fed_taxable_income
 
     # Add back federally taxed retirement income that Illinois excludes
     il_taxable_income += (
