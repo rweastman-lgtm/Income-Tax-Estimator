@@ -96,7 +96,7 @@ def estimate_tax(income_dict, age_1, age_2, capital_loss_carryover):
         taxable_income=taxable_income
     )
 
-   return {
+  return {
     "Total Income": ordinary_income + ss + qualified_div + cap_gains,
     "Deduction": deduction,
     "Taxable Income": taxable_income,
@@ -113,5 +113,6 @@ def estimate_tax(income_dict, age_1, age_2, capital_loss_carryover):
     ]),
     "Taxed Social Security": round(ss_taxable, 2)
 }
+
 
 
