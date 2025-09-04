@@ -1,9 +1,8 @@
 def compute_illinois_tax(
-    dividends=0.0,
-    interest=0.0,
-    capital_gains=0.0,
-    capital_losses=0.0,
-    annuities=0.0,
+    adjusted_income,
+    fed_taxable_income,
+    fed_taxed_retirement,
+    capital_loss_carryover=0.0,
     resident_tax_credit=0.0
 ):
     """
@@ -26,7 +25,16 @@ def compute_illinois_tax(
             'effective_rate': float
         }
     """
-    net_capital = min(0.0, capital_gains + max(capital_losses, -3000.0))
+   # Extract IL-taxable sources from adjusted income
+dividends = adjusted_income.get("Dividends", 0.0)
+interest = adjusted_income.get("Interest", 0.0)
+annuities = adjusted_income.get("Annuity", 0.0)
+
+# Apply IL capital loss cap
+net_capital = min(0.0, adjusted_income.get("Capital Gains", 0.0) + max(capital_loss_carryover, -3000.0))
+
+il_taxable_income = max(0.0, dividends + interest + annuities + net_capital)
+
     il_taxable_income = max(0.0, dividends + interest + annuities + net_capital)
     il_tax = round(il_taxable_income * 0.0495, 2)
     tax_due = max(0.0, il_tax - resident_tax_credit)
