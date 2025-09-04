@@ -199,9 +199,10 @@ results = estimate_tax(
 # Compute Illinois taxes
 il_results = compute_illinois_tax(
     adjusted_income_il,
-    fed_taxable_income=results["taxable_income"],
-    fed_taxed_retirement=results["taxed_retirement"],
-    capital_loss_carryover=il_capital_loss
+    fed_taxable_income=results["Taxable Income"],
+    fed_taxed_retirement=results["Taxed Retirement"],
+    capital_loss_carryover=il_capital_loss,
+    resident_tax_credit=resident_tax_credit
 )
 
 fed_taxable_income = results.get("Taxable Income", 0)
