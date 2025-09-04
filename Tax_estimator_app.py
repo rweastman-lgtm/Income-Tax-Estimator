@@ -46,7 +46,7 @@ fed_taxed_retirement = (
 il_results = compute_illinois_tax(
     adjusted_income_il,
     fed_taxable_income=fed_results["Taxable Income"],
-    fed_taxed_retirement=fed_taxed_retirement,  # <-- use your manually computed value
+    fed_taxed_retirement=fed_taxed_retirement,  # ← Use the actual variable
     capital_loss_carryover=min(capital_loss_carryover, 3000),
     resident_tax_credit=resident_tax_credit
 )
