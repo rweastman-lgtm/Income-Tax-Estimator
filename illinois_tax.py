@@ -12,7 +12,7 @@ def compute_illinois_tax(
     net_capital = min(0.0, adjusted_income_il.get("Capital Gains", 0.0) + max(capital_loss_carryover, -3000.0))
 
     if not isinstance(adjusted_income_il, dict):
-    raise TypeError("adjusted_income_il must be a dictionary")
+        raise TypeError("adjusted_income_il must be a dictionary")
 
     # Apply IL capital loss cap
     net_capital = min(0.0, adjusted_income_il.get("Capital Gains", 0.0) + max(capital_loss_carryover, -3000.0))
