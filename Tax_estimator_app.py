@@ -179,6 +179,16 @@ is_illinois_resident = st.checkbox("🏠 Illinois Resident (Retirement Income Ex
 adjusted_income = apply_pso_credit(income_sources.copy(), is_pso_eligible)
 results = estimate_tax(adjusted_income, age_1=age_1, age_2=age_2, capital_loss_carryover=capital_loss_carryover)
 
+fed_taxable_income = results.get("Taxable Income", 0)
+
+# Retirement income federally taxed but exempt in IL
+fed_taxed_retirement = (
+    income_sources.get("Social Security", 0) +
+    income_sources.get("Pension", 0) +
+    income_sources.get("IRA Withdrawals", 0) +
+    income_sources.get("Annuity", 0)
+)
+
 from illinois_tax import compute_illinois_tax
 
 # Assume fed_taxable_income and fed_taxed_retirement are already computed
