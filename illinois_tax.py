@@ -12,6 +12,8 @@ def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retiremen
     # Step 2: Subtract federally taxed retirement income that Illinois excludes
     il_base_income = max(0, total_income - fed_taxed_retirement)
 
+    il_base_income += income_sources.get("Annuity", 0)
+    
     # Step 3: Subtract capital loss carryover (up to $3,000)
     il_base_income -= min(capital_loss_carryover, 3000)
 
