@@ -27,6 +27,8 @@ capital_loss_carryover = st.number_input("Capital Loss Carryover", value=0)
 resident_tax_credit = float(st.number_input("Resident Tax Credit", value=0))
 is_pso_eligible = st.checkbox("Eligible for PSO Credit")
 is_illinois_resident = st.checkbox("Illinois Resident")
+real_estate_tax_paid = st.number_input("Real Estate Taxes Paid", value=0)
+resident_tax_credit = real_estate_tax_paid * 0.05
 
 # Scoped copies
 adjusted_income_fed = income_sources.copy()
