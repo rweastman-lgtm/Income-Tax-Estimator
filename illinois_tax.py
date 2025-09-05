@@ -6,26 +6,24 @@ def apply_pso_credit(income_sources, is_pso_eligible):
     return income_sources
 
 def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retirement, taxable_social_security, capital_loss_carryover, resident_tax_credit):
-    # Step 1: Compute total income
-    total_income = sum(income_sources.values())
+    # Step 1: Include IL-taxable income sources
+    il_base_income = (
+        income_sources.get("Qualified Dividends", 0) +
+        income_sources.get("Interest", 0) +
+        income_sources.get("Annuity", 0)  # Include if non-qualified
+    )
 
-    # Step 2: Subtract federally taxed retirement income that Illinois excludes
-    il_base_income = max(0, total_income - fed_taxed_retirement)
-
-    il_base_income += income_sources.get("Annuity", 0)
-    
-    # Step 3: Subtract capital loss carryover (up to $3,000)
+    # Step 2: Subtract capital loss carryover (up to $3,000)
     il_base_income -= min(capital_loss_carryover, 3000)
 
-    # Step 4: Subtract personal exemptions ($2,425 per filer)
-    personal_exemption = 2 * 2425
-    il_base_income -= personal_exemption
+    # Step 3: Subtract Illinois standard deduction ($2,775 per filer)
+    il_base_income -= 2 * 2775  # = $5,550
 
-    # Step 5: Compute tax due
+    # Step 4: Compute tax due
     il_tax_due = max(0, il_base_income * 0.0495)
 
-    # Step 6: Apply real estate tax credit (up to $300)
-    il_tax_due = max(0, il_tax_due - min(resident_tax_credit, 300))
+    # Step 5: Apply real estate tax credit (up to $300)
+    il_tax_due -= min(resident_tax_credit, 300)
 
     return {
         "IL Taxable Income": round(il_base_income, 2),
