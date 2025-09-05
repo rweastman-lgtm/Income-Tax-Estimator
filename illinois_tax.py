@@ -2,7 +2,7 @@
 
 def apply_pso_credit(income_sources, is_pso_eligible):
     if is_pso_eligible:
-        income_sources["Pension"] = max(income_sources.get("Pension", 0) - 6000, 0)
+        income_sources["Pension"] = max(income_sources.get("Pension", 0) - 3000, 0)
     return income_sources
 
 def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retirement, taxable_social_security, capital_loss_carryover, resident_tax_credit):
