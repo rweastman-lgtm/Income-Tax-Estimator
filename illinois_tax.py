@@ -16,7 +16,7 @@ def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retiremen
     il_base_income -= min(capital_loss_carryover, 3000)
 
     # Step 4: Subtract personal exemptions ($2,425 per filer)
-    personal_exemption = 2 * 2425  # Married filing jointly
+    personal_exemption = 2 * 2425
     il_base_income -= personal_exemption
 
     # Step 5: Compute tax due
@@ -29,4 +29,3 @@ def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retiremen
         "IL Taxable Income": round(il_base_income, 2),
         "Illinois Tax": round(il_tax_due, 2)
     }
-
