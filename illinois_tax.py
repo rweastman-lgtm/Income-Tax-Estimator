@@ -10,7 +10,14 @@ def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retiremen
     il_taxable_income = fed_taxable_income
 
     # Add back federally taxed retirement income that Illinois excludes
-   il_taxable_income = max(0, fed_results["Total Income"] - fed_taxed_retirement)
+    il_taxable_income += (
+        income_sources.get("IRA Withdrawals", 0) +
+        income_sources.get("Roth Conversions", 0) +
+        income_sources.get("Pension", 0) +
+        income_sources.get("TSP", 0) +
+        income_sources.get("Annuity", 0) +
+        taxable_social_security
+    )
 
     il_tax_due = max(il_taxable_income * 0.0495, 0)
 
