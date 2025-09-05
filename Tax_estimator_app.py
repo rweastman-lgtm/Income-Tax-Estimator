@@ -24,7 +24,7 @@ income_sources = {
 }
 
 capital_loss_carryover = st.number_input("Capital Loss Carryover", value=0)
-resident_tax_credit = st.number_input("Resident Tax Credit", value=0)
+resident_tax_credit = float(st.number_input("Resident Tax Credit", value=0))
 is_pso_eligible = st.checkbox("Eligible for PSO Credit")
 is_illinois_resident = st.checkbox("Illinois Resident")
 
