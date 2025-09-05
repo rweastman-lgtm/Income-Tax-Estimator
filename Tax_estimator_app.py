@@ -62,4 +62,3 @@ st.write(f"Federally Taxed Retirement (excluded by IL): ${fed_taxed_retirement:,
 st.subheader("Illinois Income Tax")
 st.write(f"IL Taxable Income: ${il_results['IL Taxable Income']:,.2f}")
 st.write(f"IL Tax Due: ${il_results['Illinois Tax']:,.2f}")
-
