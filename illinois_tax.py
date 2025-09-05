@@ -10,7 +10,7 @@ def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retiremen
     il_base_income = (
         income_sources.get("Qualified Dividends", 0) +
         income_sources.get("Interest", 0) +
-        income_sources.get("Annuity", 0)  # Include if non-qualified
+        income_sources.get("Annuity", 0)
     )
 
     # Step 2: Subtract capital loss carryover (up to $3,000)
@@ -22,8 +22,8 @@ def compute_illinois_tax(income_sources, fed_taxable_income, fed_taxed_retiremen
     # Step 4: Compute tax due
     il_tax_due = max(0, il_base_income * 0.0495)
 
-    # Step 5: Apply real estate tax credit (up to $300)
-    il_tax_due -= min(resident_tax_credit, 300)
+    # ✅ Step 5: Apply real estate tax credit (up to $300)
+    il_tax_due = max(0, il_tax_due - min(resident_tax_credit, 300))
 
     return {
         "IL Taxable Income": round(il_base_income, 2),
