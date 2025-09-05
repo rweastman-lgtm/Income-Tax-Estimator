@@ -96,23 +96,20 @@ def estimate_tax(income_dict, age_1, age_2, capital_loss_carryover):
         taxable_income=taxable_income
     )
 
-  return {
-    "Total Income": ordinary_income + ss + qualified_div + cap_gains,
-    "Deduction": deduction,
-    "Taxable Income": taxable_income,
-    "Ordinary Tax": round(tax, 2),
-    "Capital Gains Tax": round(cg_tax, 2),
-    "Total Tax": round(tax + cg_tax, 2),
-    "Bracket Breakdown": breakdown,
-    "CG Breakdown": cg_verbose,
-    "Taxed Retirement": sum([
-        income_dict.get("Social Security", 0),
-        income_dict.get("Pension", 0),
-        income_dict.get("IRA Withdrawals", 0),
-        income_dict.get("Annuity", 0)
-    ]),
-    "Taxed Social Security": round(ss_taxable, 2)
-}
-
-
-
+    return {
+        "Total Income": ordinary_income + ss + qualified_div + cap_gains,
+        "Deduction": deduction,
+        "Taxable Income": taxable_income,
+        "Ordinary Tax": round(tax, 2),
+        "Capital Gains Tax": round(cg_tax, 2),
+        "Total Tax": round(tax + cg_tax, 2),
+        "Bracket Breakdown": breakdown,
+        "CG Breakdown": cg_verbose,
+        "Taxed Retirement": sum([
+            income_dict.get("Social Security", 0),
+            income_dict.get("Pension", 0),
+            income_dict.get("IRA Withdrawals", 0),
+            income_dict.get("Annuity", 0)
+        ]),
+        "Taxed Social Security": round(ss_taxable, 2)
+    }
